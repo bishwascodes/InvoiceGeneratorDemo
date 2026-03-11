@@ -3,6 +3,10 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using InvoiceGenerator.Models;
+using InvoiceGenerator.Services;
+#if WINDOWS
+using Microsoft.Maui.Platform;
+#endif
 
 namespace InvoiceGenerator.ViewModels
 {
@@ -13,8 +17,15 @@ namespace InvoiceGenerator.ViewModels
         private string _newItemQuantity = "1";
         private string _newItemPrice = "150.00";
 
+        private readonly PdfGeneratorService _pdfGenerator;
+        private bool _isGeneratingPdf = false;
+        private string _statusMessage = string.Empty;
+
+
         public InvoiceViewModel()
         {
+            _pdfGenerator = new PdfGeneratorService();
+
             _invoice = new Invoice
             {
                 BusinessName = "Your Company Name",
@@ -232,21 +243,114 @@ namespace InvoiceGenerator.ViewModels
 
         private bool CanPrintInvoice()
         {
-            return !string.IsNullOrWhiteSpace(CustomerName) && Items.Count > 0;
+            return !string.IsNullOrWhiteSpace(CustomerName) && Items.Count > 0 && !IsGeneratingPdf;
         }
 
         private async void PrintInvoice()
         {
-            // TODO: Implement PDF generation here
-            // See PDF_GENERATION_GUIDE.md for implementation details
-            await Application.Current!.MainPage!.DisplayAlert(
-                "Print Invoice",
-                "PDF generation feature is not yet implemented.\n\n" +
-                "This is where you would generate and save/share the PDF invoice.\n\n" +
-                $"Invoice #{InvoiceNumber}\n" +
-                $"Customer: {CustomerName}\n" +
-                $"Total: ${Total:F2}",
-                "OK");
+            // Prevent multiple clicks
+            if (IsGeneratingPdf)
+            {
+                System.Diagnostics.Debug.WriteLine("Already generating PDF, ignoring click");
+                return;
+            }
+
+            try
+            {
+                // Update UI immediately on main thread
+                IsGeneratingPdf = true;
+                StatusMessage = "Generating PDF...";
+                ((Command)PrintInvoiceCommand).ChangeCanExecute();
+
+                System.Diagnostics.Debug.WriteLine("=== Starting PDF Generation ===");
+
+                // Create filename first (on UI thread, uses properties)
+                var fileName = $"Invoice_{InvoiceNumber}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
+                System.Diagnostics.Debug.WriteLine($"Filename: {fileName}");
+
+                // Generate PDF on background thread (CPU-intensive work)
+                StatusMessage = "Creating PDF document...";
+                byte[] pdfBytes = await Task.Run(() =>
+                {
+                    System.Diagnostics.Debug.WriteLine("Generating PDF on background thread...");
+                    var bytes = _pdfGenerator.GenerateInvoicePdf(_invoice);
+                    System.Diagnostics.Debug.WriteLine($"PDF generated: {bytes.Length} bytes");
+                    return bytes;
+                });
+
+#if WINDOWS
+                System.Diagnostics.Debug.WriteLine("Platform: Windows - Showing save dialog");
+                StatusMessage = "Choose save location...";
+
+                // Windows - Use File Save Picker (must be on UI thread)
+                var filePath = await SaveFileWindows(pdfBytes, fileName);
+
+                if (filePath != null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"File saved to: {filePath}");
+                    StatusMessage = "PDF saved successfully!";
+
+                    await Task.Delay(100); // Small delay to ensure UI updates
+
+                    await Application.Current!.MainPage!.DisplayAlert(
+                        "Success!",
+                        $"Invoice PDF saved successfully!\n\n" +
+                        $"Location: {filePath}\n" +
+                        $"Size: {pdfBytes.Length / 1024} KB",
+                        "OK");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("Save dialog cancelled by user");
+                    StatusMessage = "Save cancelled";
+                }
+#else
+        System.Diagnostics.Debug.WriteLine("Platform: Mobile - Using share");
+        StatusMessage = "Preparing to share...";
+
+        // Other platforms - Save to app directory and share
+        var filePath = Path.Combine(FileSystem.AppDataDirectory, fileName);
+        await File.WriteAllBytesAsync(filePath, pdfBytes);
+
+        // Share/Open the PDF
+        await Share.Default.RequestAsync(new ShareFileRequest
+        {
+            Title = "Share Invoice PDF",
+            File = new ShareFile(filePath)
+        });
+
+        StatusMessage = "PDF shared successfully!";
+
+        await Application.Current!.MainPage!.DisplayAlert(
+            "Success!",
+            $"Invoice PDF generated and ready to share!\n\n" +
+            $"File: {fileName}\n" +
+            $"Size: {pdfBytes.Length / 1024} KB",
+            "OK");
+#endif
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"ERROR: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack Trace: {ex.StackTrace}");
+
+                StatusMessage = "Error generating PDF";
+
+                // Show error message
+                await Application.Current!.MainPage!.DisplayAlert(
+                    "Error",
+                    $"Failed to generate PDF:\n{ex.Message}\n\n" +
+                    $"Type: {ex.GetType().Name}",
+                    "OK");
+            }
+            finally
+            {
+                // Always reset state on UI thread
+                IsGeneratingPdf = false;
+                StatusMessage = string.Empty;
+                ((Command)PrintInvoiceCommand).ChangeCanExecute();
+                System.Diagnostics.Debug.WriteLine("=== PDF Generation Complete ===");
+            }
         }
 
         private void UpdatePrintButtonState()
@@ -265,5 +369,76 @@ namespace InvoiceGenerator.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public string StatusMessage
+        {
+            get => _statusMessage;
+            set
+            {
+                _statusMessage = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsGeneratingPdf
+        {
+            get => _isGeneratingPdf;
+            set
+            {
+                _isGeneratingPdf = value;
+                OnPropertyChanged();
+            }
+        }
+
+#if WINDOWS
+        private async Task<string?> SaveFileWindows(byte[] pdfBytes, string fileName)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("Creating FileSavePicker...");
+                var savePicker = new Windows.Storage.Pickers.FileSavePicker();
+
+                // Get the current window handle
+                System.Diagnostics.Debug.WriteLine("Getting window handle...");
+                var window = ((MauiWinUIWindow)Application.Current!.Windows[0].Handler.PlatformView!);
+                var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+                WinRT.Interop.InitializeWithWindow.Initialize(savePicker, hwnd);
+
+                // Set file type and default location
+                System.Diagnostics.Debug.WriteLine("Configuring picker...");
+                savePicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+                savePicker.SuggestedFileName = fileName;
+                savePicker.FileTypeChoices.Add("PDF Document", new List<string>() { ".pdf" });
+
+                // Show save file dialog
+                System.Diagnostics.Debug.WriteLine("Showing save dialog...");
+                var file = await savePicker.PickSaveFileAsync();
+
+                if (file != null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"File selected: {file.Path}");
+                    System.Diagnostics.Debug.WriteLine("Writing bytes to file...");
+
+                    // Save the PDF
+                    await Windows.Storage.FileIO.WriteBytesAsync(file, pdfBytes);
+
+                    System.Diagnostics.Debug.WriteLine("File written successfully!");
+                    return file.Path;
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("No file selected (dialog cancelled)");
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"SaveFileWindows ERROR: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack: {ex.StackTrace}");
+                throw; // Re-throw so it's caught by the calling method
+            }
+        }
+#endif
     }
 }

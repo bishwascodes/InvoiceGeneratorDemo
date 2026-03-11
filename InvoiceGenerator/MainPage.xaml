@@ -6,7 +6,16 @@
              xmlns:helpers="clr-namespace:InvoiceGenerator.Helpers"
              x:Class="InvoiceGenerator.MainPage"
              Title="Invoice Generator"
-             BackgroundColor="#F5F5F5">
+             BackgroundColor="#F5F5F5"
+             xmlns:converters="clr-namespace:InvoiceGenerator.Converters"
+             >
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:IsNotNullOrEmptyConverter x:Key="IsNotNullOrEmptyConverter"/>
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <ContentPage.BindingContext>
         <viewmodels:InvoiceViewModel />
@@ -320,6 +329,15 @@
                     </VerticalStackLayout>
                 </Frame>
 
+                <!-- Status Message -->
+                <Label Text="{Binding StatusMessage}"
+                   FontSize="14"
+                   TextColor="#1976D2"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   IsVisible="{Binding IsGeneratingPdf}"
+                   Margin="0,10,0,5"/>      
+
                 <!-- Print Button -->
                 <Grid>
                     <Button Command="{Binding PrintInvoiceCommand}"
@@ -328,7 +346,9 @@
                             HeightRequest="55"
                             CornerRadius="10"
                             Margin="0,10,0,20"
-                            Text=""/>
+                            Text=""
+                            Opacity="{Binding IsGeneratingPdf, Converter={StaticResource InverseBoolConverter}}"
+                            />
                     <HorizontalStackLayout Spacing="10" 
                                            HorizontalOptions="Center"
                                            VerticalOptions="Center"
