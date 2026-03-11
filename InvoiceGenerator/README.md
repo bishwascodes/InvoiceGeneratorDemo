@@ -4,7 +4,7 @@ A simple invoice generator application built with .NET MAUI that allows you to c
 
 ## Features
 
-### Current Implementation ✅
+### Current Implementation
 
 - **Customer Information Entry**
   - Customer Name
