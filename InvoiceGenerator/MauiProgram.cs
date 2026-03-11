@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using QuestPDF.Infrastructure;
+
 
 namespace InvoiceGenerator
 {
@@ -6,6 +8,8 @@ namespace InvoiceGenerator
     {
         public static MauiApp CreateMauiApp()
         {
+            QuestPDF.Settings.License = LicenseType.Community;
+
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
