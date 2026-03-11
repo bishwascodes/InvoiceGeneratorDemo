@@ -1,0 +1,578 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:InvoiceGenerator.ViewModels"
+             xmlns:behaviors="clr-namespace:InvoiceGenerator.Behaviors"
+             xmlns:helpers="clr-namespace:InvoiceGenerator.Helpers"
+             x:Class="InvoiceGenerator.MainPage"
+             Title="Invoice Generator"
+             BackgroundColor="#F5F5F5">
+
+    <ContentPage.BindingContext>
+        <viewmodels:InvoiceViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid Padding="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Panel: Input Form -->
+        <ScrollView Grid.Column="0" Padding="10">
+            <VerticalStackLayout Spacing="20">
+                <!-- Title with Icon -->
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing="10" Margin="0,10,0,10">
+                    <Label Text="{x:Static helpers:FontAwesomeIcons.FileInvoice}" 
+                           FontFamily="FontAwesomeSolid"
+                           FontSize="28" 
+                           TextColor="#1976D2"
+                           VerticalOptions="Center"/>
+                    <Label Text="Invoice Generator" 
+                           FontSize="28" 
+                           FontAttributes="Bold"
+                           TextColor="#1976D2"
+                           VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+
+                <!-- Business Info Section -->
+                <Frame BorderColor="#E0E0E0" 
+                       Padding="15" 
+                       CornerRadius="10"
+                       BackgroundColor="White"
+                       HasShadow="True">
+                    <VerticalStackLayout Spacing="12">
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="{x:Static helpers:FontAwesomeIcons.Building}" 
+                                   FontFamily="FontAwesomeSolid"
+                                   FontSize="18" 
+                                   TextColor="#1976D2"
+                                   VerticalOptions="Center"/>
+                            <Label Text="Business Information" 
+                                   FontSize="18" 
+                                   FontAttributes="Bold"
+                                   TextColor="#1976D2"
+                                   VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+
+                        <Label Text="Business Name:" FontSize="14" TextColor="#424242"/>
+                        <Entry Text="{Binding BusinessName}" 
+                               Placeholder="Your Company Name"
+                               FontSize="14"
+                               BackgroundColor="#FAFAFA">
+                            <Entry.Behaviors>
+                                <behaviors:SelectAllOnFocusBehavior />
+                            </Entry.Behaviors>
+                        </Entry>
+
+                        <Label Text="Business Address:" FontSize="14" TextColor="#424242"/>
+                        <Editor Text="{Binding BusinessAddress}" 
+                                Placeholder="123 Business St, City, State ZIP"
+                                HeightRequest="60"
+                                FontSize="14"
+                                BackgroundColor="#FAFAFA">
+                            <Editor.Behaviors>
+                                <behaviors:SelectAllOnFocusEditorBehavior />
+                            </Editor.Behaviors>
+                        </Editor>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <VerticalStackLayout Grid.Column="0">
+                                <Label Text="Phone:" FontSize="14" TextColor="#424242"/>
+                                <Entry Text="{Binding BusinessPhone}" 
+                                       Placeholder="(555) 123-4567"
+                                       Keyboard="Telephone"
+                                       FontSize="14"
+                                       BackgroundColor="#FAFAFA">
+                                    <Entry.Behaviors>
+                                        <behaviors:SelectAllOnFocusBehavior />
+                                    </Entry.Behaviors>
+                                </Entry>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Column="1">
+                                <Label Text="Email:" FontSize="14" TextColor="#424242"/>
+                                <Entry Text="{Binding BusinessEmail}" 
+                                       Placeholder="contact@company.com"
+                                       Keyboard="Email"
+                                       FontSize="14"
+                                       BackgroundColor="#FAFAFA">
+                                    <Entry.Behaviors>
+                                        <behaviors:SelectAllOnFocusBehavior />
+                                    </Entry.Behaviors>
+                                </Entry>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Invoice Info Section -->
+                <Frame BorderColor="#E0E0E0" 
+                       Padding="15" 
+                       CornerRadius="10"
+                       BackgroundColor="White"
+                       HasShadow="True">
+                    <VerticalStackLayout Spacing="12">
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="{x:Static helpers:FontAwesomeIcons.Receipt}" 
+                                   FontFamily="FontAwesomeSolid"
+                                   FontSize="18" 
+                                   TextColor="#1976D2"
+                                   VerticalOptions="Center"/>
+                            <Label Text="Invoice Information" 
+                                   FontSize="18" 
+                                   FontAttributes="Bold"
+                                   TextColor="#1976D2"
+                                   VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+
+                        <Label Text="Invoice Number:" FontSize="14" TextColor="#424242"/>
+                        <Entry Text="{Binding InvoiceNumber}" 
+                               Placeholder="INV-00001"
+                               FontSize="14"
+                               BackgroundColor="#FAFAFA">
+                            <Entry.Behaviors>
+                                <behaviors:SelectAllOnFocusBehavior />
+                            </Entry.Behaviors>
+                        </Entry>
+
+                        <Label Text="Invoice Date:" FontSize="14" TextColor="#424242"/>
+                        <DatePicker Date="{Binding InvoiceDate}"
+                                    FontSize="14"
+                                    BackgroundColor="#FAFAFA"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Customer Info Section -->
+                <Frame BorderColor="#E0E0E0" 
+                       Padding="15" 
+                       CornerRadius="10"
+                       BackgroundColor="White"
+                       HasShadow="True">
+                    <VerticalStackLayout Spacing="12">
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="{x:Static helpers:FontAwesomeIcons.User}" 
+                                   FontFamily="FontAwesomeSolid"
+                                   FontSize="18" 
+                                   TextColor="#1976D2"
+                                   VerticalOptions="Center"/>
+                            <Label Text="Customer Information" 
+                                   FontSize="18" 
+                                   FontAttributes="Bold"
+                                   TextColor="#1976D2"
+                                   VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+
+                        <Label Text="Customer Name:" FontSize="14" TextColor="#424242"/>
+                        <Entry Text="{Binding CustomerName}" 
+                               Placeholder="Enter customer name"
+                               FontSize="14"
+                               BackgroundColor="#FAFAFA">
+                            <Entry.Behaviors>
+                                <behaviors:SelectAllOnFocusBehavior />
+                            </Entry.Behaviors>
+                        </Entry>
+
+                        <Label Text="Customer Email:" FontSize="14" TextColor="#424242"/>
+                        <Entry Text="{Binding CustomerEmail}" 
+                               Placeholder="customer@email.com"
+                               Keyboard="Email"
+                               FontSize="14"
+                               BackgroundColor="#FAFAFA">
+                            <Entry.Behaviors>
+                                <behaviors:SelectAllOnFocusBehavior />
+                            </Entry.Behaviors>
+                        </Entry>
+
+                        <Label Text="Customer Address:" FontSize="14" TextColor="#424242"/>
+                        <Editor Text="{Binding CustomerAddress}" 
+                                Placeholder="Enter customer address"
+                                HeightRequest="80"
+                                FontSize="14"
+                                BackgroundColor="#FAFAFA">
+                            <Editor.Behaviors>
+                                <behaviors:SelectAllOnFocusEditorBehavior />
+                            </Editor.Behaviors>
+                        </Editor>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Items Section -->
+                <Frame BorderColor="#E0E0E0" 
+                       Padding="15" 
+                       CornerRadius="10"
+                       BackgroundColor="White"
+                       HasShadow="True">
+                    <VerticalStackLayout Spacing="12">
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="{x:Static helpers:FontAwesomeIcons.Box}" 
+                                   FontFamily="FontAwesomeSolid"
+                                   FontSize="18" 
+                                   TextColor="#1976D2"
+                                   VerticalOptions="Center"/>
+                            <Label Text="Invoice Items" 
+                                   FontSize="18" 
+                                   FontAttributes="Bold"
+                                   TextColor="#1976D2"
+                                   VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+
+                        <Label Text="Description:" FontSize="14" TextColor="#424242"/>
+                        <Entry Text="{Binding NewItemDescription}" 
+                               Placeholder="Item description"
+                               FontSize="14"
+                               BackgroundColor="#FAFAFA">
+                            <Entry.Behaviors>
+                                <behaviors:SelectAllOnFocusBehavior />
+                            </Entry.Behaviors>
+                        </Entry>
+
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                            <VerticalStackLayout Grid.Column="0">
+                                <Label Text="Quantity:" FontSize="14" TextColor="#424242"/>
+                                <Entry Text="{Binding NewItemQuantity}" 
+                                       Placeholder="1"
+                                       Keyboard="Numeric"
+                                       FontSize="14"
+                                       BackgroundColor="#FAFAFA">
+                                    <Entry.Behaviors>
+                                        <behaviors:SelectAllOnFocusBehavior />
+                                    </Entry.Behaviors>
+                                </Entry>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Column="1">
+                                <Label Text="Unit Price:" FontSize="14" TextColor="#424242"/>
+                                <Entry Text="{Binding NewItemPrice}" 
+                                       Placeholder="0.00"
+                                       Keyboard="Numeric"
+                                       FontSize="14"
+                                       BackgroundColor="#FAFAFA">
+                                    <Entry.Behaviors>
+                                        <behaviors:SelectAllOnFocusBehavior />
+                                    </Entry.Behaviors>
+                                </Entry>
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <Grid>
+                            <Button Command="{Binding AddItemCommand}"
+                                    BackgroundColor="#4CAF50"
+                                    TextColor="White"
+                                    CornerRadius="8"
+                                    HeightRequest="45"
+                                    Text=""/>
+                            <HorizontalStackLayout Spacing="8" 
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center"
+                                                   InputTransparent="True">
+                                <Label Text="{x:Static helpers:FontAwesomeIcons.Plus}" 
+                                       FontFamily="FontAwesomeSolid"
+                                       FontSize="14"
+                                       TextColor="White"
+                                       VerticalOptions="Center"/>
+                                <Label Text="Add Item"
+                                       FontSize="15"
+                                       FontAttributes="Bold"
+                                       TextColor="White"
+                                       VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Tax Section -->
+                <Frame BorderColor="#E0E0E0" 
+                       Padding="15" 
+                       CornerRadius="10"
+                       BackgroundColor="White"
+                       HasShadow="True">
+                    <VerticalStackLayout Spacing="12">
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="{x:Static helpers:FontAwesomeIcons.Calculator}" 
+                                   FontFamily="FontAwesomeSolid"
+                                   FontSize="18" 
+                                   TextColor="#1976D2"
+                                   VerticalOptions="Center"/>
+                            <Label Text="Tax Settings" 
+                                   FontSize="18" 
+                                   FontAttributes="Bold"
+                                   TextColor="#1976D2"
+                                   VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                            <Label Grid.Column="0" Text="Tax Rate (%):" 
+                                   VerticalOptions="Center"
+                                   FontSize="14"
+                                   TextColor="#424242"/>
+                            <Entry Grid.Column="1" 
+                                   Text="{Binding Tax}" 
+                                   Placeholder="0"
+                                   Keyboard="Numeric"
+                                   FontSize="14"
+                                   BackgroundColor="#FAFAFA">
+                                <Entry.Behaviors>
+                                    <behaviors:SelectAllOnFocusBehavior />
+                                </Entry.Behaviors>
+                            </Entry>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Frame>
+
+                <!-- Print Button -->
+                <Grid>
+                    <Button Command="{Binding PrintInvoiceCommand}"
+                            BackgroundColor="#1976D2"
+                            TextColor="White"
+                            HeightRequest="55"
+                            CornerRadius="10"
+                            Margin="0,10,0,20"
+                            Text=""/>
+                    <HorizontalStackLayout Spacing="10" 
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center"
+                                           InputTransparent="True">
+                        <Label Text="{x:Static helpers:FontAwesomeIcons.Print}" 
+                               FontFamily="FontAwesomeSolid"
+                               FontSize="16"
+                               TextColor="White"
+                               VerticalOptions="Center"/>
+                        <Label Text="Print Invoice"
+                               FontSize="17"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </Grid>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Right Panel: Invoice Preview -->
+        <ScrollView Grid.Column="1" Padding="10">
+            <Frame BorderColor="#BDBDBD" 
+                   Padding="30" 
+                   BackgroundColor="White"
+                   CornerRadius="8"
+                   HasShadow="True">
+                <VerticalStackLayout Spacing="20">
+                    <!-- Header with Business Info -->
+                    <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="5">
+                        <Label Grid.Row="0" Grid.Column="0"
+                               Text="{Binding BusinessName}" 
+                               FontSize="20" 
+                               FontAttributes="Bold"
+                               TextColor="#1976D2"/>
+
+                        <Label Grid.Row="0" Grid.Column="1"
+                               Text="INVOICE" 
+                               FontSize="36" 
+                               FontAttributes="Bold"
+                               TextColor="#1976D2"
+                               HorizontalOptions="End"/>
+
+                        <Label Grid.Row="1" Grid.Column="0"
+                               Text="{Binding BusinessAddress}"
+                               FontSize="11"
+                               TextColor="#616161"
+                               LineBreakMode="WordWrap"/>
+
+                        <Label Grid.Row="2" Grid.Column="0"
+                               FontSize="11"
+                               TextColor="#616161">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="{Binding BusinessPhone}"/>
+                                    <Span Text=" • "/>
+                                    <Span Text="{Binding BusinessEmail}"/>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </Grid>
+
+                    <BoxView HeightRequest="2" Color="#1976D2" Margin="0,10,0,5"/>
+
+                    <!-- Invoice Details -->
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="8">
+                        <Label Grid.Row="0" Grid.Column="0" 
+                               FontSize="12"
+                               TextColor="#424242">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Invoice #: " FontAttributes="Bold"/>
+                                    <Span Text="{Binding InvoiceNumber}"/>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Label Grid.Row="1" Grid.Column="0" 
+                               FontSize="12"
+                               TextColor="#424242">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Date: " FontAttributes="Bold"/>
+                                    <Span Text="{Binding InvoiceDate, StringFormat='{0:MMM dd, yyyy}'}"/>
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </Grid>
+
+                    <BoxView HeightRequest="1" Color="#E0E0E0" Margin="0,5"/>
+
+                    <!-- Customer Info -->
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="BILL TO" 
+                               FontSize="13" 
+                               FontAttributes="Bold"
+                               TextColor="#1976D2"/>
+                        <Label Text="{Binding CustomerName}"
+                               FontSize="13"
+                               FontAttributes="Bold"
+                               TextColor="Black"
+                               IsVisible="{Binding CustomerName, Converter={StaticResource IsNotNullOrEmptyConverter}}"/>
+                        <Label Text="{Binding CustomerEmail}"
+                               FontSize="12"
+                               TextColor="#616161"
+                               IsVisible="{Binding CustomerEmail, Converter={StaticResource IsNotNullOrEmptyConverter}}"/>
+                        <Label Text="{Binding CustomerAddress}"
+                               FontSize="12"
+                               TextColor="#616161"
+                               IsVisible="{Binding CustomerAddress, Converter={StaticResource IsNotNullOrEmptyConverter}}"/>
+                    </VerticalStackLayout>
+
+                    <BoxView HeightRequest="2" Color="#1976D2" Margin="0,15,0,10"/>
+
+                    <!-- Items Header -->
+                    <Grid ColumnDefinitions="2*,*,*,*" ColumnSpacing="8" Padding="5,0">
+                        <Label Grid.Column="0" Text="DESCRIPTION" 
+                               FontSize="12" FontAttributes="Bold" 
+                               TextColor="#1976D2"/>
+                        <Label Grid.Column="1" Text="QTY" 
+                               FontSize="12" FontAttributes="Bold" 
+                               TextColor="#1976D2" 
+                               HorizontalOptions="End"/>
+                        <Label Grid.Column="2" Text="RATE" 
+                               FontSize="12" FontAttributes="Bold" 
+                               TextColor="#1976D2" 
+                               HorizontalOptions="End"/>
+                        <Label Grid.Column="3" Text="AMOUNT" 
+                               FontSize="12" FontAttributes="Bold" 
+                               TextColor="#1976D2" 
+                               HorizontalOptions="End"/>
+                    </Grid>
+
+                    <BoxView HeightRequest="1" Color="#BDBDBD"/>
+
+                    <!-- Items List -->
+                    <CollectionView ItemsSource="{Binding Items}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="2*,*,*,*,Auto" 
+                                      ColumnSpacing="8" 
+                                      Padding="5,8"
+                                      BackgroundColor="#FAFAFA"
+                                      Margin="0,2">
+                                    <Label Grid.Column="0" 
+                                           Text="{Binding Description}"
+                                           FontSize="12"
+                                           TextColor="#212121"
+                                           VerticalOptions="Center"/>
+                                    <Label Grid.Column="1" 
+                                           Text="{Binding Quantity}"
+                                           FontSize="12"
+                                           TextColor="#424242"
+                                           HorizontalOptions="End"
+                                           VerticalOptions="Center"/>
+                                    <Label Grid.Column="2" 
+                                           Text="{Binding UnitPrice, StringFormat='${0:F2}'}"
+                                           FontSize="12"
+                                           TextColor="#424242"
+                                           HorizontalOptions="End"
+                                           VerticalOptions="Center"/>
+                                    <Label Grid.Column="3" 
+                                           Text="{Binding Total, StringFormat='${0:F2}'}"
+                                           FontSize="12"
+                                           TextColor="#212121"
+                                           FontAttributes="Bold"
+                                           HorizontalOptions="End"
+                                           VerticalOptions="Center"/>
+                                    <Button Grid.Column="4"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:InvoiceViewModel}}, Path=RemoveItemCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="#EF5350"
+                                            TextColor="White"
+                                            FontFamily="FontAwesomeSolid"
+                                            Text="{x:Static helpers:FontAwesomeIcons.TrashCan}"
+                                            FontSize="12"
+                                            Padding="8,4"
+                                            WidthRequest="35"
+                                            HeightRequest="30"
+                                            CornerRadius="5"
+                                            Margin="5,0,0,0"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <BoxView HeightRequest="2" Color="#1976D2" Margin="0,15,0,10"/>
+
+                    <!-- Totals -->
+                    <VerticalStackLayout Spacing="8" HorizontalOptions="End">
+                        <Grid ColumnDefinitions="Auto,120" ColumnSpacing="30">
+                            <Label Grid.Column="0" Text="Subtotal:" 
+                                   FontSize="13" 
+                                   TextColor="#424242"/>
+                            <Label Grid.Column="1" 
+                                   Text="{Binding Subtotal, StringFormat='${0:F2}'}"
+                                   FontSize="13" 
+                                   TextColor="#424242"
+                                   HorizontalOptions="End"/>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="Auto,120" ColumnSpacing="30">
+                            <Label Grid.Column="0" 
+                                   Text="{Binding Tax, StringFormat='Tax ({0}%):'}" 
+                                   FontSize="13" 
+                                   TextColor="#424242"/>
+                            <Label Grid.Column="1" 
+                                   Text="{Binding TaxAmount, StringFormat='${0:F2}'}"
+                                   FontSize="13" 
+                                   TextColor="#424242"
+                                   HorizontalOptions="End"/>
+                        </Grid>
+
+                        <BoxView HeightRequest="1" Color="#BDBDBD" Margin="0,5"/>
+
+                        <Grid ColumnDefinitions="Auto,120" ColumnSpacing="30">
+                            <Label Grid.Column="0" Text="TOTAL:" 
+                                   FontSize="17" 
+                                   FontAttributes="Bold"
+                                   TextColor="#1976D2"/>
+                            <Label Grid.Column="1" 
+                                   Text="{Binding Total, StringFormat='${0:F2}'}"
+                                   FontSize="17" 
+                                   FontAttributes="Bold"
+                                   TextColor="#1976D2"
+                                   HorizontalOptions="End"/>
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <BoxView HeightRequest="2" Color="#E0E0E0" Margin="0,15,0,5"/>
+
+                    <!-- Footer -->
+                    <VerticalStackLayout Spacing="5" Margin="0,10,0,0">
+                        <Label Text="Thank you for your business!" 
+                               FontSize="13"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"
+                               TextColor="#1976D2"/>
+                        <Label Text="Please remit payment within 30 days" 
+                               FontSize="11"
+                               FontAttributes="Italic"
+                               HorizontalOptions="Center"
+                               TextColor="#757575"/>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Frame>
+        </ScrollView>
+    </Grid>
+</ContentPage>
