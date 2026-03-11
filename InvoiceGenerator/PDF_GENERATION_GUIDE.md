@@ -1,4 +1,4 @@
-# PDF Generation Implementation Guide
+ PDF Generation Implementation Guide
 
 This guide explains how to extend the Invoice Generator app to support PDF generation and printing functionality.
 
